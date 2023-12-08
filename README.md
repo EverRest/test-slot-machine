@@ -60,3 +60,9 @@ Please organize, design, test and document your code as if it were going into pr
 - npm run build
 - php artisan migrate
 - enjoy!
+
+
+## Implementation
+- Laravel 10
+- Livewire
+
