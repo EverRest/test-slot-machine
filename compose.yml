@@ -1,0 +1,85 @@
+services:
+  app:
+    container_name: ${APP_NAME}-php
+    restart: unless-stopped
+    tty: true
+    build: .
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      network:
+          ipv4_address: 172.0.1.1
+  webserver:
+    image: nginx:alpine
+    container_name: ${APP_NAME}-nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      network:
+        ipv4_address: 172.0.1.2
+  db:
+    image: mysql:8.0
+    container_name: ${APP_NAME}-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      network:
+        ipv4_address: 172.0.1.3
+  test_db:
+    image: mysql:8.0
+    container_name: ${APP_NAME}-testdb
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "33060:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - testdbdata:/var/lib/mysql/
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      network:
+        ipv4_address: 172.0.1.4
+  redis:
+    image: redis:latest
+    container_name: ${APP_NAME}-redis
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - cachedata:/data
+    networks:
+      network:
+        ipv4_address: 172.0.1.5
+networks:
+  network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.0.0.0/16
+volumes:
+  dbdata:
+    driver: local
+  testdbdata:
+    driver: local
+  cachedata:
+    driver: local
