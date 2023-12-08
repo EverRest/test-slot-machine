@@ -28,12 +28,22 @@ class GameComponent extends Component
     /**
      * @var string
      */
+    public string $randomDirection = '';
+
+    /**
+     * @var string
+     */
     public string $resultMessage = '';
 
     /**
      * @var bool
      */
     public bool $buttonsVisible = true;
+
+    /**
+     * @var bool
+     */
+    public bool $cashOutButtonVisible = true;
 
     public function __construct()
     {
@@ -64,6 +74,7 @@ class GameComponent extends Component
             $this->resultMessage = 'You don\'t have enough of credits for the game!';
             return;
         }
+        $this->cashOutButtonVisible = true;
         $this->credits--;
         $this->updateButtonsState();
         $this->blocks = $rollService->roll($this->credits);
@@ -93,6 +104,22 @@ class GameComponent extends Component
     /**
      * @return void
      */
+    public function handleMouseOver(): void
+    {
+        $roll = $this->generateRandomSize(1, 100);
+        if ($roll <= 50) {
+            $randH = $this->generateRandomSize();
+            $randW = $this->generateRandomSize();
+            $this->randomDirection = "translate({$randH}px,{$randW}px)";
+
+        } elseif ($roll <= 90) {
+            $this->cashOutButtonVisible = false;
+        }
+    }
+
+    /**
+     * @return void
+     */
     private function updateButtonsState(): void
     {
         $this->buttonsVisible = ($this->credits > 0);
@@ -104,6 +131,17 @@ class GameComponent extends Component
     private function initBlocks(): void
     {
         $this->blocks = ['X', 'X', 'X'];
+    }
+
+    /**
+     * @param int $min
+     * @param int $max
+     *
+     * @return int
+     */
+    private function generateRandomSize(int $min = -100, int $max = 100): int
+    {
+        return rand($min, $max);
     }
 }
 

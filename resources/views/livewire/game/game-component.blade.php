@@ -12,7 +12,13 @@
             <button wire:click="roll" class="waves-effect waves-light btn" @if(!$buttonsVisible) disabled @endif>
                 Roll
             </button>
-            <button wire:click="cashOut" class="waves-effect waves-light btn red" @if(!$buttonsVisible) disabled @endif>
+            <button
+                    wire:mouseover="handleMouseOver"
+                    wire:click="cashOut"
+                    {{ $randomDirection ? "style=transform:$randomDirection;" : '' }}
+                    class="waves-effect waves-light btn red"
+                    @if(!$buttonsVisible||!$cashOutButtonVisible) disabled @endif
+            >
                 Cash Out
             </button>
             <p>{{ $resultMessage }}</p>
