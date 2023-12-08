@@ -7,60 +7,56 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Task
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Objective
+Jackpot! You've landed a summer gig in Las Vegas! Unfortunately, it's 2021, and the casinos are closed due to COVID-19. Your boss wants to move some of the business online and asks you to build a full-stack app — a simple slot machine game, with a little twist. Build it to ensure that the house always wins!
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Brief
+When a player starts a game/session, they are allocated 10 credits. Pulling the machine lever (rolling the slots) costs 1 credit. The game screen has 1 row with 3 blocks. For players to win the roll, they have to get the same symbol in each block. There are 4 possible symbols: cherry (10 credits reward), lemon (20 credits reward), orange (30 credits reward), and watermelon (40 credits reward). The game (session) state has to be kept on the server. If the player keeps winning, they can play forever, but the house has something to say about that... There is a CASH OUT button on the screen, but there's a twist there as well.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Tasks
+Implement assignment using:
 
-## Learning Laravel
+Language: PHP
+Framework: Laravel
+When a user opens the app, a session is created on the server, and they have 10 starting credits.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Server-side:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+When a user has less than 40 credits in the game session, their rolls are truly random.
+If a user has between 40 and 60 credits, then the server begins to slightly cheat:
+For each winning roll, before communicating back to the client, the server does one 30% chance roll which decides if the server will re-roll that round.
+If that roll is true, then the server re-rolls and communicates the new result back.
+If the user has above 60 credits, the server acts the same, but in this case the chance of re-rolling the round increases to 60%.
+If that roll is true, then the server re-rolls and communicates the new result back.
+There is a cash-out endpoint that moves credits from the game session to the user's account and closes the session.
+Persist each roll made to a database. Also persist the credits on a users account.
+Client side:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Include a super simple, minimalistic table with 3 blocks in 1 row.
+Include a button next to the table that starts the game.
+The components for each sign can be a starting letter (C for cherry, L for lemon, O for orange, W for watermelon).
+After submitting a roll request to the server, all blocks should enter a spinning state (can be the character 'X' spinning).
+After receiving a response from the server, the first sign should spin for 1 second more and then display the result, then display the second sign at 2 seconds, then the third sign at 3 seconds.
+If the user wins the round, their session credit is increased by the amount from the server response, else it is deducted by 1.
+Include a button on the screen that says "CASH OUT", but when the user hovers it, there is a 50% chance that the button moves in a random direction by 300px, and a 40% chance that it becomes unclickable (this roll should be done on the client-side). If they succeed to hit it, credits from the session are moved to their account.
+Evaluation Criteria
+PHP and Laravel best practices
+Completeness: did you complete the features as briefed?
+Correctness: does the solution perform in sensible, thought-out ways?
+Maintainability: is the code written in a clean, maintainable way?
+Testing: was the system adequately tested?
+CodeSubmit
+Please organize, design, test and document your code as if it were going into production - then push your changes to the master branch. After you have pushed your code, you may submit the assignment on the assignment page.
 
-## Laravel Sponsors
+## Set Up
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- docker-compose up -d
+- prepare .env file
+- inside of container with application you need to run next commands:
+- composer i
+- npm i
+- npm run build
+- php artisan migrate
+- enjoy!
